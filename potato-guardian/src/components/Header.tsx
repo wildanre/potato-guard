@@ -11,7 +11,7 @@ const Header: React.FC = () => {
         <div className="flex items-center space-x-2">
           <Leaf className="h-8 w-8 text-green-600 dark:text-green-400" />
           <h1 className="text-2xl font-bold text-green-800 dark:text-green-100">
-            Pelindung Kentang
+            KentangCare
           </h1>
         </div>
         <button

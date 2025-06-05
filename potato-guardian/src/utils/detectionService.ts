@@ -39,16 +39,21 @@ export const detectDisease = async (imageFile: File): Promise<DiseaseResult> => 
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
-
-    if (result.status === 'success') {
+    const result = await response.json();    if (result.status === 'success') {
       const diseaseKey = result.prediction as keyof typeof diseaseInfo;
-      const info = diseaseInfo[diseaseKey] || diseaseInfo['Healthy'];      return {
+      const info = diseaseInfo[diseaseKey] || diseaseInfo['Healthy'];
+      
+      return {
         name: result.prediction,
         confidence: result.confidence,
         description: info.description,
-        treatment: info.treatment
-      };    } else {
+        treatment: info.treatment,
+        isUncertain: result.is_uncertain,
+        warning: result.warning,
+        allPredictions: result.all_predictions,
+        rawConfidence: result.raw_confidence,
+        qualityScore: result.quality_score
+      };} else {
       throw new Error(result.message || 'Prediction failed');
     }
   } catch (error) {

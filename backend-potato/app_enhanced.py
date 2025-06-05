@@ -5,7 +5,6 @@ from flask_cors import CORS
 import os
 from PIL import Image
 import io
-from image_enhancement import enhance_image_quality, apply_test_time_augmentation, calculate_image_metrics, calibrate_confidence
 
 app = Flask(__name__)
 CORS(app)
@@ -17,12 +16,40 @@ CLASS_NAMES = ['Early_Blight', 'Healthy', 'Late_Blight']
 try:
     MODEL_DIR = os.path.join('models')
     model = tf.saved_model.load(MODEL_DIR)
-    predict_fn = model.signatures['serving_default']  # Get the serving signature
+    predict_fn = model.signatures['serving_default']
     print("Model loaded successfully!")
 except Exception as e:
     print(f"Error loading model: {str(e)}")
     model = None
     predict_fn = None
+
+def calculate_image_quality_score(img_array):
+    """Calculate basic image quality metrics"""
+    # Brightness
+    brightness = np.mean(img_array)
+    
+    # Contrast (standard deviation)
+    gray = np.mean(img_array, axis=2)
+    contrast = np.std(gray)
+    
+    # Simple sharpness metric
+    laplacian_var = np.var(np.gradient(gray))
+    
+    quality_score = 1.0
+    
+    # Penalize poor brightness
+    if brightness < 50 or brightness > 200:
+        quality_score *= 0.8
+    
+    # Penalize low contrast
+    if contrast < 30:
+        quality_score *= 0.7
+    
+    # Penalize blurry images
+    if laplacian_var < 100:
+        quality_score *= 0.6
+    
+    return quality_score
 
 def preprocess_image(image_bytes):
     img = Image.open(io.BytesIO(image_bytes)).convert('RGB')
@@ -40,21 +67,15 @@ def preprocess_image(image_bytes):
     # 2. Resize with high-quality resampling
     img = img.resize((224, 224), Image.Resampling.LANCZOS)
     
-    # 3. Enhanced normalization (using ImageNet statistics)
+    # 3. Enhanced normalization
     img_array = np.array(img, dtype=np.float32)
     
     # Normalize to [0, 1] first
     img_array = img_array / 255.0
     
-    # Apply ImageNet normalization (if your model was trained with this)
-    # Uncomment if your model expects ImageNet normalized inputs
-    # mean = np.array([0.485, 0.456, 0.406])
-    # std = np.array([0.229, 0.224, 0.225])
-    # img_array = (img_array - mean) / std
-    
     # Convert to tensor with batch dimension
     img_tensor = tf.convert_to_tensor([img_array], dtype=tf.float32)
-    return img_tensor
+    return img_tensor, img_array
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -71,28 +92,28 @@ def predict():
         if image_file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
         
-        # Check file size (max 10MB)
-        if len(image_file.read()) > 10 * 1024 * 1024:
-            return jsonify({'error': 'File too large. Maximum size is 10MB'}), 400
-        
-        # Reset file pointer
-        image_file.seek(0)
         image_bytes = image_file.read()
+        
+        # Check file size (max 10MB)
+        if len(image_bytes) > 10 * 1024 * 1024:
+            return jsonify({'error': 'File too large. Maximum size is 10MB'}), 400
         
         # Validate that it's actually an image
         try:
-            from PIL import Image
             test_img = Image.open(io.BytesIO(image_bytes))
-            test_img.verify()  # Verify it's a valid image
+            test_img.verify()
         except Exception:
             return jsonify({'error': 'Invalid image file'}), 400
         
-        # Reset for processing
-        input_tensor = preprocess_image(image_bytes)
-          # Prediksi menggunakan model dengan serving signature
+        # Preprocess image
+        input_tensor, img_array = preprocess_image(image_bytes)
+        
+        # Calculate image quality
+        quality_score = calculate_image_quality_score(img_array)
+        
+        # Prediksi menggunakan model dengan serving signature
         predictions = predict_fn(tf.constant(input_tensor))
-        # Get the output tensor (you might need to adjust the key based on your model's output)
-        output_key = list(predictions.keys())[0]  # Get the first output key
+        output_key = list(predictions.keys())[0]
         predictions_array = predictions[output_key].numpy()
         
         # Get top predictions for better analysis
@@ -101,30 +122,40 @@ def predict():
         
         predicted_index = top_indices[0]
         predicted_label = CLASS_NAMES[predicted_index]
-        confidence = float(top_confidences[0])
+        raw_confidence = float(top_confidences[0])
+        
+        # Apply quality-based confidence calibration
+        calibrated_confidence = raw_confidence * quality_score
         
         # Calculate confidence threshold and uncertainty
         second_confidence = float(top_confidences[1]) if len(top_confidences) > 1 else 0.0
-        confidence_gap = confidence - second_confidence
+        confidence_gap = calibrated_confidence - second_confidence
         
         # Add uncertainty flag for low confidence or close predictions
-        is_uncertain = confidence < 0.7 or confidence_gap < 0.2
+        is_uncertain = calibrated_confidence < 0.7 or confidence_gap < 0.2 or quality_score < 0.8
         
         response_data = {
             'status': 'success',
             'prediction': predicted_label,
-            'confidence': confidence,
+            'confidence': calibrated_confidence,
+            'raw_confidence': raw_confidence,
+            'quality_score': quality_score,
             'is_uncertain': is_uncertain,
             'all_predictions': {
                 CLASS_NAMES[i]: float(top_confidences[i]) 
-                for i in range(min(3, len(CLASS_NAMES)))  # Top 3 predictions
+                for i in range(min(3, len(CLASS_NAMES)))
             }
         }
         
         # Add warning for uncertain predictions
         if is_uncertain:
-            response_data['warning'] = 'Hasil prediksi kurang pasti. Pertimbangkan untuk menggunakan gambar dengan kualitas lebih baik.'
+            if quality_score < 0.8:
+                response_data['warning'] = 'Kualitas gambar kurang baik. Coba gunakan pencahayaan yang lebih baik dan pastikan gambar tidak blur.'
+            else:
+                response_data['warning'] = 'Hasil prediksi kurang pasti. Pertimbangkan untuk mengambil foto dari sudut yang berbeda.'
+        
         return jsonify(response_data)
+        
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
@@ -136,6 +167,5 @@ def health_check():
     })
 
 if __name__ == '__main__':
-    # Untuk production, set debug=False
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)

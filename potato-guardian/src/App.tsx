@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import ImageUploader from './components/ImageUploader';
 import ResultsDisplay from './components/ResultsDisplay';
 import InfoSection from './components/InfoSection';
+import AccuracyTips from './components/AccuracyTips';
 import { detectDisease } from './utils/detectionService';
 import { DiseaseResult, UploadStatus } from './types';
 
@@ -55,7 +56,7 @@ function App() {
           <section className="py-12 px-6">
             <div className="container mx-auto text-center mb-8">
               <h1 className="text-3xl md:text-4xl font-bold text-green-800 dark:text-green-300 mb-4">
-                Pendeteksian Penyakit Daun Kentang
+                Deteksi Penyakit Daun Kentang
               </h1>
               <p className="max-w-2xl mx-auto text-green-700 dark:text-green-400">
                 Upload gambar daun kentang untuk mendeteksi penyakit dan dapatkan rekomendasi pengobatan.
@@ -70,9 +71,10 @@ function App() {
           </section>
 
           <InfoSection />
-        </main>
-
-        <Footer />
+        </main>        <Footer />
+        
+        {/* Floating Tips Button */}
+        <AccuracyTips />
       </div>
     </ThemeProvider>
   );
