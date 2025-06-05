@@ -16,15 +16,23 @@ const diseaseInfo: Record<string, Omit<DiseaseResult, 'name' | 'confidence'>> = 
   }
 };
 
+// Get API URL from environment variable with fallback
+const API_URL = import.meta.env.VITE_API_URL;
+//  || 'http://localhost:5000'
+
 // Real API service for disease detection
 export const detectDisease = async (imageFile: File): Promise<DiseaseResult> => {
   const formData = new FormData();
   formData.append('image', imageFile);
 
   try {
-    const response = await fetch('http://localhost:5000/predict', {
+    const response = await fetch(`${API_URL}/predict`, {
       method: 'POST',
       body: formData,
+      headers: {
+        // Add ngrok-skip-browser-warning header to avoid ngrok warning page
+        'ngrok-skip-browser-warning': 'true',
+      },
     });
 
     if (!response.ok) {
