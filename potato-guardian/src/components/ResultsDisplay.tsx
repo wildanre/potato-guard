@@ -38,24 +38,23 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
         ) : severity === 'high' ? (
           <AlertTriangle className="h-6 w-6 mr-2" />
         ) : (
-          <Info className="h-6 w-6 mr-2" />        )}
-        <div>
-          <h3 className="font-bold text-lg">{result.name}</h3>
+          <Info className="h-6 w-6 mr-2" />        )}        <div>
+          <h3 className="font-bold text-lg">{result.name.replace(/_/g, ' ')}</h3>
           <p className="text-sm">
-            Confidence: {Math.round(result.confidence * 100)}%
+            probabilitas: {Math.round(result.confidence * 100)}%
           </p>
         </div>
       </div>
       
       <div className="p-6">
         <div className="mb-4">
-          <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Description</h4>
+          <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Deskripsi</h4>
           <p className="text-gray-700 dark:text-gray-300">{result.description}</p>
         </div>
         
         {result.name !== 'Healthy' && (
           <div>
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Treatment</h4>
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Pengobatan</h4>
             <p className="text-gray-700 dark:text-gray-300">{result.treatment}</p>
           </div>
         )}

@@ -1,3 +1,27 @@
-venv
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
 .env
-models
+
+# IDE
+.vscode/
+.idea/
+
+# Original large model (use optimized version instead)
+models/
+
+# Keep optimized model
+!models_optimized/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Development files
+*.log
+.pytest_cache/
