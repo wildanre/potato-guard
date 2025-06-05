@@ -5,49 +5,43 @@ import Footer from './components/Footer';
 import ImageUploader from './components/ImageUploader';
 import ResultsDisplay from './components/ResultsDisplay';
 import InfoSection from './components/InfoSection';
-import { detectDisease } from './utils/mockDetectionService';
+import { detectDisease } from './utils/detectionService';
 import { DiseaseResult, UploadStatus } from './types';
 
 function App() {
   const [result, setResult] = useState<DiseaseResult | null>(null);
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({
-    isUploading: false,
     isProcessing: false,
     error: null
   });
 
-  const handleImageSelect = async (file: File) => {
+  const handleImageSelect = (_file: File) => {
+    // Clear previous results when new image is selected
     setResult(null);
     setUploadStatus({
-      isUploading: true,
       isProcessing: false,
+      error: null
+    });
+  };
+
+  const handleAnalyzeImage = async (file: File) => {
+    setResult(null);
+    setUploadStatus({
+      isProcessing: true,
       error: null
     });
 
     try {
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      setUploadStatus({
-        isUploading: false,
-        isProcessing: true,
-        error: null
-      });
-
-      // Process the image using the mock detection service
       const detectionResult = await detectDisease(file);
-
       setResult(detectionResult);
       setUploadStatus({
-        isUploading: false,
         isProcessing: false,
         error: null
       });
     } catch (error) {
       setUploadStatus({
-        isUploading: false,
         isProcessing: false,
-        error: error instanceof Error ? error.message : 'An error occurred during processing. Please try again.'
+        error: error instanceof Error ? error.message : 'Terjadi kesalahan saat menganalisis gambar. Silakan coba lagi.'
       });
     }
   };
@@ -66,10 +60,9 @@ function App() {
               <p className="max-w-2xl mx-auto text-green-700 dark:text-green-400">
                 Upload gambar daun kentang untuk mendeteksi penyakit dan dapatkan rekomendasi pengobatan.
               </p>
-            </div>
-
-            <ImageUploader
+            </div>            <ImageUploader
               onImageSelect={handleImageSelect}
+              onAnalyzeImage={handleAnalyzeImage}
               uploadStatus={uploadStatus}
             />
 

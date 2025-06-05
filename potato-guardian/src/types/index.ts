@@ -13,7 +13,6 @@ export interface DiseaseResult {
 }
 
 export interface UploadStatus {
-  isUploading: boolean;
   isProcessing: boolean;
   error: string | null;
 }

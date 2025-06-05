@@ -7,9 +7,7 @@ interface ResultsDisplayProps {
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
-  if (!result) return null;
-
-  // Determine severity level based on the disease and confidence
+  if (!result) return null;  // Determine severity level based on the disease and confidence
   const getSeverityLevel = () => {
     if (result.name === 'Healthy') return 'healthy';
     
@@ -40,8 +38,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result }) => {
         ) : severity === 'high' ? (
           <AlertTriangle className="h-6 w-6 mr-2" />
         ) : (
-          <Info className="h-6 w-6 mr-2" />
-        )}
+          <Info className="h-6 w-6 mr-2" />        )}
         <div>
           <h3 className="font-bold text-lg">{result.name}</h3>
           <p className="text-sm">
