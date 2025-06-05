@@ -181,6 +181,7 @@ tensorflow==2.10.0    # Machine learning library
 Pillow==9.5.0         # Image processing
 numpy==1.23.5         # Numerical computing
 flask-cors==4.0.0     # Cross-origin resource sharing
+opencv-python-headless==4.10.0.84  # Computer vision library (headless version)
 ```
 
 ## Error Handling
