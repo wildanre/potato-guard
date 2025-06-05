@@ -106,8 +106,7 @@ def predict():
         # Calculate confidence threshold and uncertainty
         second_confidence = float(top_confidences[1]) if len(top_confidences) > 1 else 0.0
         confidence_gap = confidence - second_confidence
-        
-        # Add uncertainty flag for low confidence or close predictions
+          # Add uncertainty flag for low confidence or close predictions
         is_uncertain = confidence < 0.7 or confidence_gap < 0.2
         
         response_data = {
@@ -116,7 +115,7 @@ def predict():
             'confidence': confidence,
             'is_uncertain': is_uncertain,
             'all_predictions': {
-                CLASS_NAMES[i]: float(top_confidences[i]) 
+                CLASS_NAMES[top_indices[i]]: float(top_confidences[i]) 
                 for i in range(min(3, len(CLASS_NAMES)))  # Top 3 predictions
             }
         }
