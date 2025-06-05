@@ -21,3 +21,15 @@ export interface UploadStatus {
   isProcessing: boolean;
   error: string | null;
 }
+
+export interface ChatMessage {
+  id: string;
+  content: string;
+  isUser: boolean;
+  timestamp: Date;
+}
+
+export interface ChatStatus {
+  isLoading: boolean;
+  error: string | null;
+}

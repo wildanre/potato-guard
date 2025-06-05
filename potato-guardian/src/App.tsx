@@ -6,6 +6,7 @@ import ImageUploader from './components/ImageUploader';
 import ResultsDisplay from './components/ResultsDisplay';
 import InfoSection from './components/InfoSection';
 import AccuracyTips from './components/AccuracyTips';
+import Chatbot from './components/Chatbot';
 import { detectDisease } from './utils/detectionService';
 import { DiseaseResult, UploadStatus } from './types';
 
@@ -75,6 +76,9 @@ function App() {
         
         {/* Floating Tips Button */}
         <AccuracyTips />
+        
+        {/* Chatbot */}
+        <Chatbot />
       </div>
     </ThemeProvider>
   );

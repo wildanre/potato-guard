@@ -51,10 +51,9 @@ const AccuracyTips: React.FC = () => {
   ];
 
   return (
-    <>
-      <button
+    <>      <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors z-40"
+        className="fixed bottom-4 right-4 sm:bottom-4 sm:right-4 md:bottom-20 md:right-6 lg:bottom-4 lg:right-12 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40"
         title="Tips untuk Akurasi Terbaik"
       >
         <HelpCircle className="h-6 w-6" />

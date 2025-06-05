@@ -6,6 +6,7 @@ A modern React-based web application for detecting potato diseases using machine
 
 - 🔍 **AI-Powered Disease Detection**: Upload potato leaf images for instant disease analysis
 - 📊 **Detailed Results**: View confidence scores and all possible predictions
+- 🤖 **AI Chatbot**: Interactive chatbot powered by Google Gemini for expert advice
 - 🌓 **Dark/Light Theme**: Toggle between dark and light modes for comfortable viewing
 - 📱 **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - ⚡ **Real-time Processing**: Fast image analysis with loading indicators
@@ -19,6 +20,14 @@ The application can identify three categories:
 - **Late Blight**: Destructive disease causing dark lesions
 - **Healthy**: Normal, disease-free potato leaves
 
+## Chatbot Features
+
+The integrated AI chatbot can help you with:
+- Information about potato diseases
+- Treatment and prevention recommendations
+- Plant care tips
+- Interpretation of detection results
+
 ## Technology Stack
 
 - **Frontend Framework**: React 18 with TypeScript
@@ -27,11 +36,13 @@ The application can identify three categories:
 - **Icons**: Lucide React
 - **State Management**: React Context API
 - **HTTP Client**: Fetch API
+- **AI Integration**: Google Generative AI (Gemini)
 
 ## Prerequisites
 
 - Node.js 16 or higher
 - npm or yarn package manager
+- Google Gemini API key
 
 ## Installation
 
@@ -46,9 +57,23 @@ The application can identify three categories:
    npm install
    ```
 
-3. **Start the development server**
+3. **Set up environment variables**
+   Create a `.env` file in the root directory and add your Gemini API key:
+   ```env
+   VITE_API_URL=your_backend_api_url
+   VITE_GEMINI_API_KEY=your_gemini_api_key_here
+   ```
+
+   To get a Gemini API key:
+   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Sign in with your Google account
+   - Create a new API key
+   - Copy the key to your `.env` file
+
+4. **Start the development server**
    ```bash
    npm run dev
+   ```
    ```
 
 4. **Open your browser**
