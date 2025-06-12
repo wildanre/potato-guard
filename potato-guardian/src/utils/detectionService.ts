@@ -29,11 +29,13 @@ export const detectDisease = async (imageFile: File): Promise<DiseaseResult> => 
     const response = await fetch(`${API_URL}/predict`, {
       method: 'POST',
       body: formData,
-      headers: {
+headers: {
         // Add ngrok-skip-browser-warning header to avoid ngrok warning page
         'ngrok-skip-browser-warning': 'true',
       },
-    });
+      mode: 'cors', // Explicitly state CORS mode
+      credentials: 'omit' // Don't send credentials like cookies
+    });   
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

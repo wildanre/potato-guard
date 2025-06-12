@@ -8,7 +8,8 @@ import io
 from image_enhancement import enhance_image_quality, apply_test_time_augmentation, calculate_image_metrics, calibrate_confidence
 
 app = Flask(__name__)
-CORS(app)
+# Konfigurasi CORS dengan opsi lebih spesifik
+CORS(app, resources={r"/*": {"origins": "*", "allow_headers": ["Content-Type", "ngrok-skip-browser-warning"], "methods": ["GET", "POST", "OPTIONS"]}})
 
 # Kelas label
 CLASS_NAMES = ['Early_Blight', 'Healthy', 'Late_Blight']
