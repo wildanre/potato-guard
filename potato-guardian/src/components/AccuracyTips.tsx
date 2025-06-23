@@ -1,51 +1,51 @@
 import React, { useState } from 'react';
-import { HelpCircle, Camera, Sun, Target, Lightbulb, X } from 'lucide-react';
+import { HelpCircle, Upload, Eye, MessageCircle, RotateCcw, X } from 'lucide-react';
 
 const AccuracyTips: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const tips = [
     {
-      icon: <Sun className="h-5 w-5 text-yellow-500" />,
-      title: "Pencahayaan Optimal",
-      description: "Gunakan cahaya alami yang merata, hindari bayangan keras atau cahaya terlalu terang yang menyebabkan overexposure."
+      icon: <Upload className="h-5 w-5 text-blue-500" />,
+      title: "Upload Gambar",
+      description: "Klik area upload atau drag & drop gambar daun kentang Anda. Format yang didukung: JPG, PNG, maksimal 5MB."
     },
     {
-      icon: <Target className="h-5 w-5 text-blue-500" />,
-      title: "Fokus pada Daun",
-      description: "Pastikan daun mengisi 60-80% frame gambar dengan latar belakang yang kontras (tanah, langit, atau permukaan gelap)."
+      icon: <Eye className="h-5 w-5 text-green-500" />,
+      title: "Lihat Contoh Gambar",
+      description: "Scroll ke bawah untuk melihat contoh gambar setiap penyakit. Klik gambar untuk melihat detail lebih besar."
     },
     {
-      icon: <Camera className="h-5 w-5 text-green-500" />,
-      title: "Kualitas Gambar",
-      description: "Gunakan resolusi minimal 224x224 pixel, hindari blur, dan pastikan detail daun terlihat jelas."
+      icon: <MessageCircle className="h-5 w-5 text-purple-500" />,
+      title: "Gunakan Chatbot",
+      description: "Klik ikon chat di pojok kanan untuk bertanya tentang hasil deteksi atau cara perawatan tanaman kentang."
     },
     {
-      icon: <Lightbulb className="h-5 w-5 text-purple-500" />,
-      title: "Sudut Pengambilan",
-      description: "Ambil foto dari atas daun dengan sudut 45-90 derajat untuk menangkap detail permukaan daun dengan baik."
+      icon: <RotateCcw className="h-5 w-5 text-orange-500" />,
+      title: "Coba Ulang Jika Perlu",
+      description: "Jika hasil confidence rendah atau tidak sesuai, upload gambar lain atau gunakan gambar dengan kualitas lebih baik."
     }
   ];
 
   const examples = [
     {
-      type: "good",
-      title: "✅ Gambar Baik",
+      type: "steps",
+      title: "📋 Langkah-Langkah Penggunaan",
       points: [
-        "Daun terlihat jelas dan fokus",
-        "Pencahayaan merata tanpa bayangan",
-        "Latar belakang kontras",
-        "Detail gejala penyakit terlihat"
+        "Upload gambar daun kentang",
+        "Tunggu proses analisis selesai",
+        "Lihat hasil deteksi dan tingkat confidence",
+        "Baca rekomendasi yang diberikan"
       ]
     },
     {
-      type: "bad", 
-      title: "❌ Hindari",
+      type: "features", 
+      title: "🎯 Fitur Aplikasi",
       points: [
-        "Gambar blur atau buram",
-        "Pencahayaan terlalu gelap/terang",
-        "Daun terlalu kecil dalam frame",
-        "Banyak objek lain yang menganggu"
+        "Deteksi 3 kondisi: Sehat, Early Blight, Late Blight",
+        "Chatbot AI untuk konsultasi",
+        "Galeri contoh gambar penyakit",
+        "Mode gelap/terang otomatis"
       ]
     }
   ];
@@ -54,21 +54,27 @@ const AccuracyTips: React.FC = () => {
     <>      <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-4 right-4 sm:bottom-4 sm:right-4 md:bottom-20 md:right-6 lg:bottom-4 lg:right-12 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40"
-        title="Tips untuk Akurasi Terbaik"
+        title="Panduan Penggunaan Aplikasi"
       >
         <HelpCircle className="h-6 w-6" />
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          onClick={() => setIsOpen(false)}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="sticky top-0 bg-white dark:bg-gray-800 p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Tips Meningkatkan Akurasi Deteksi
+                Panduan Penggunaan Aplikasi
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 p-2 rounded-full transition-colors"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -111,15 +117,15 @@ const AccuracyTips: React.FC = () => {
                 ))}
               </div>
 
-              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-                <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                  💡 Pro Tips
+              <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                <h3 className="font-semibold text-green-900 dark:text-green-100 mb-2">
+                  💡 Tips Penggunaan
                 </h3>
-                <ul className="text-sm text-blue-700 dark:text-blue-200 space-y-1">
-                  <li>• Ambil beberapa foto dari sudut berbeda untuk hasil terbaik</li>
-                  <li>• Bersihkan lensa kamera sebelum mengambil foto</li>
-                  <li>• Jika confidence rendah (&lt;70%), coba ambil foto ulang dengan tips di atas</li>
-                  <li>• Untuk gejala ringan, gunakan mode macro jika tersedia</li>
+                <ul className="text-sm text-green-700 dark:text-green-200 space-y-1">
+                  <li>• Gunakan gambar dengan resolusi yang cukup untuk hasil optimal</li>
+                  <li>• Jika hasil confidence rendah (&lt;70%), coba gambar lain</li>
+                  <li>• Manfaatkan chatbot untuk mendapat penjelasan detail tentang hasil</li>
+                  <li>• Lihat galeri contoh untuk memahami karakteristik setiap penyakit</li>
                 </ul>
               </div>
             </div>

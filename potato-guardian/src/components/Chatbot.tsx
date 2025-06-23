@@ -13,6 +13,46 @@ const Chatbot: React.FC = () => {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Function to format message content with markdown-like styling
+  const formatMessage = (content: string) => {
+    const lines = content.split('\n');
+    
+    return lines.map((line, lineIndex) => {
+      // Handle list items (lines starting with *)
+      if (line.trim().startsWith('* ')) {
+        const listContent = line.trim().substring(2);
+        const formattedContent = formatBoldText(listContent);
+        return (
+          <div key={lineIndex} className="flex items-start mb-1">
+            <span className="text-green-500 mr-2 mt-0.5">•</span>
+            <span>{formattedContent}</span>
+          </div>
+        );
+      }
+      
+      // Handle regular lines with bold formatting
+      const formattedContent = formatBoldText(line);
+      return (
+        <div key={lineIndex} className={lineIndex > 0 ? "mt-1" : ""}>
+          {formattedContent}
+        </div>
+      );
+    });
+  };
+
+  // Function to handle bold text formatting (**text**)
+  const formatBoldText = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        const boldText = part.slice(2, -2);
+        return <strong key={index} className="font-semibold">{boldText}</strong>;
+      }
+      return part;
+    });
+  };
+
   // Initialize messages based on service availability
   useEffect(() => {
     if (chatbotService.isServiceAvailable()) {
@@ -126,7 +166,7 @@ const Chatbot: React.FC = () => {
   };  return (
     <>
       {/* Floating Chat Button */}
-      <div className="fixed bottom-20 right-4 sm:bottom-20 sm:right-4 md:bottom-20 md:right-6 lg:bottom-20 lg:right-12 z-50">
+      <div className="fixed bottom-20 right-4 sm:bottom-20 sm:right-4 md:bottom-20 md:right-6 lg:bottom-20 lg:right-12 z-30">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="bg-green-600 hover:bg-green-700 text-white rounded-full p-3 shadow-lg transition-all duration-300 hover:scale-110 dark:bg-green-700 dark:hover:bg-green-800"
@@ -138,17 +178,26 @@ const Chatbot: React.FC = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-32 right-6 sm:bottom-32 sm:right-6 md:bottom-32 md:right-8 lg:bottom-32 lg:right-6 w-80 sm:w-80 md:w-96 lg:w-80 h-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 flex flex-col z-40">
+        <div className="fixed bottom-20 left-4 right-4 sm:bottom-32 sm:left-auto sm:right-6 md:bottom-32 md:right-8 lg:bottom-32 lg:right-6 sm:w-80 md:w-96 lg:w-80 h-[600px] sm:h-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 flex flex-col z-30">
           {/* Header */}
           <div className="bg-green-600 dark:bg-green-700 text-white p-4 rounded-t-lg flex justify-between items-center">
             <h3 className="font-semibold">Asisten Kentang</h3>
-            <button
-              onClick={handleResetChat}
-              className="text-green-100 hover:text-white transition-colors"
-              aria-label="Reset chat"
-            >
-              <RotateCcw size={16} />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleResetChat}
+                className="text-green-100 hover:text-white transition-colors p-1"
+                aria-label="Reset chat"
+              >
+                <RotateCcw size={16} />
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-white bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 p-2 rounded-full shadow-md transition-colors"
+                aria-label="Close chat"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Messages */}
@@ -165,7 +214,9 @@ const Chatbot: React.FC = () => {
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <div className="text-sm">
+                    {formatMessage(message.content)}
+                  </div>
                   <p className="text-xs opacity-70 mt-1">
                     {message.timestamp.toLocaleTimeString([], { 
                       hour: '2-digit', 
