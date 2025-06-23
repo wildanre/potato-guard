@@ -1,0 +1,13 @@
+export const APP_CONFIG = {
+  PRELOAD_DELAY: 100,
+  IMAGE_BASE_PATH: '/',
+  PRELOAD_ENABLED: true,
+  SHOW_PRELOAD_PROGRESS: true,
+  IMAGE_LAZY_LOADING: true,
+} as const;
+
+export const UI_CONFIG = {
+  ANIMATION_DURATION: 300,
+  MODAL_Z_INDEX: 50,
+  PROGRESS_BAR_HEIGHT: 8,
+} as const;
