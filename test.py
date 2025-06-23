@@ -7,7 +7,7 @@ TOTAL_REQUESTS = 1000  # Jumlah total request
 CONCURRENT_REQUESTS = 100  # Banyak request paralel dalam 1 batch
 
 payload = {
-    "data": "x" * 100000  # Payload besar untuk uji beban
+    "data": "x" * 1000  # Payload besar untuk uji beban
 }
 
 headers = {
