@@ -1,3 +1,5 @@
+// Alternative simple version without visible progress indicator
+
 import React, { useState, useEffect } from 'react';
 import { Leaf, Droplets, Heart, X } from 'lucide-react';
 
@@ -28,61 +30,23 @@ const DISEASE_INFO = [
 
 const InfoSection: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [preloadStatus, setPreloadStatus] = useState<{
-    loaded: number;
-    total: number;
-    isComplete: boolean;
-  }>({ loaded: 0, total: 0, isComplete: false });
 
-  // Preload all images when component mounts
+  // Simple image preloading without UI feedback
   useEffect(() => {
-    const preloadImages = async () => {
-      // Get all image paths from DISEASE_INFO
+    const preloadImages = () => {
       const allImagePaths = DISEASE_INFO.flatMap(disease => disease.images);
       
-      setPreloadStatus({ loaded: 0, total: allImagePaths.length, isComplete: false });
-
-      const preloadPromises = allImagePaths.map((imagePath) => {
-        return new Promise<void>((resolve, reject) => {
-          const img = new Image();
-          img.src = `/${imagePath}`;
-          
-          img.onload = () => {
-            setPreloadStatus(prev => ({ 
-              ...prev, 
-              loaded: prev.loaded + 1 
-            }));
-            console.log(`✅ Preloaded: ${imagePath}`);
-            resolve();
-          };
-          
-          img.onerror = () => {
-            console.warn(`❌ Failed to preload: ${imagePath}`);
-            // Still count as "loaded" to continue progress
-            setPreloadStatus(prev => ({ 
-              ...prev, 
-              loaded: prev.loaded + 1 
-            }));
-            reject(new Error(`Failed to load ${imagePath}`));
-          };
-        });
+      allImagePaths.forEach((imagePath) => {
+        const img = new Image();
+        img.src = `/${imagePath}`;
+        // Silent preloading - no console logs in production
       });
-
-      try {
-        await Promise.allSettled(preloadPromises);
-        setPreloadStatus(prev => ({ ...prev, isComplete: true }));
-        console.log(`🎉 All images preloaded successfully!`);
-      } catch (error) {
-        console.log('Some images failed to preload, but continuing...');
-        setPreloadStatus(prev => ({ ...prev, isComplete: true }));
-      }
     };
 
-    // Start preloading after a small delay to not block initial render
-    const timeoutId = setTimeout(preloadImages, 100);
-
+    // Start preloading after initial render
+    const timeoutId = setTimeout(preloadImages, 200);
     return () => clearTimeout(timeoutId);
-  }, []); // Empty dependency array = run once on mount
+  }, []);
 
   return (
     <>
@@ -91,21 +55,6 @@ const InfoSection: React.FC = () => {
           <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-8">
             Penyakit Daun Kentang yang Umum
           </h2>
-          
-          {/* Optional: Preload Progress Indicator */}
-          {!preloadStatus.isComplete && preloadStatus.total > 0 && (
-            <div className="mb-4 text-center">
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                Memuat gambar... {preloadStatus.loaded}/{preloadStatus.total}
-              </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 max-w-md mx-auto">
-                <div 
-                  className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(preloadStatus.loaded / preloadStatus.total) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
           
           <div className="grid grid-cols-1 max-w-6xl mx-auto lg:grid-cols-3 gap-8">
             {DISEASE_INFO.map((disease) => (
@@ -134,7 +83,6 @@ const InfoSection: React.FC = () => {
                       <img 
                         src={`/${image}`}
                         alt={`${disease.title} example`}
-                        loading="lazy"
                         className="w-full h-20 object-cover transition-transform duration-300 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
